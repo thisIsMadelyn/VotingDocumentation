@@ -53,11 +53,28 @@ A single deployed application that enforces the following guarantees:
 The sustem recognises four distinct user classes, mapped to Spring Security roles and enforced via JWT claims:
 
 ### 'ADMIN'
-Full system access. Responsible for user lifecycle management - creating accounts, promoting members to moderator and deleting records. Can delete polls and meetings. There is typically one admin per board cycle.
+Full system access. Responsible for user lifecycle management - creating reports, promoting members to moderator and deleting records. Can delete polls and meetings. There is typically one admin per board cycle.
 
 ### 'MODERATOR'
+Operational access. Creates and manages General Meetings, opens and closes polls, manages attendance rounds and creates announcements, events and reports. Cannot delete users or promote other users. This is the primary role for active board members.
 
+### 'USER' - Full Member ('member_status: MEMBER')
+Can log in, view the dashboard, cast votes in active polls during meetings they are checked into. Voting eleigibility is enforced - a 'MEMBER' who is not checked in cannot vote.
 
+### 'USER' - Junior Member ('member_status: JUNIOR')
+Can log in and view the dashboard. Cannot cast votes. This is the entry level status for new members pending full membership approval.
 
+> **Note:** Alumni accounts exist in the system ('member_status:ALUMNI') for historical recoed purpose. they carry no voting rights.
+
+---
+
+## 1.4 Project Scope
+
+### In Scope
+
+| Domain | Capabilities |
+|---|---|
+| Authentication | JWT-based login and session management. Role assignment at login. token validation on every protected request. |
+| User management | CRUD operations on user accounts. Role |
 
 
