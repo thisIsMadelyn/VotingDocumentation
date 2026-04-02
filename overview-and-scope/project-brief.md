@@ -75,6 +75,72 @@ Can log in and view the dashboard. Cannot cast votes. This is the entry level st
 | Domain | Capabilities |
 |---|---|
 | Authentication | JWT-based login and session management. Role assignment at login. token validation on every protected request. |
-| User management | CRUD operations on user accounts. Role |
+| User management | CRUD operations on user accounts. Role promotion and demotion by admins. Committee membership tracking with temporal validity (start/end dates). |
+| Meeting Management | General Meeting creation and deletion. Active meeting detection ('is_active' flag) |
+| Attendance | Multi-round attendace check-in and check-outper meeting. Round creation and deletion by moderators. Attendance state used to gate voting eligibility. |
+| Polls & Voting | Poll creation with candidate options, majority type and electoral body count. Multi-round election support ('FIRSST_ROUND', 'SECOND_ROUND', 'TIE_BREAKER'). Poll lifecycle management (open -> closed -> winner declared). |
+| Announcements | Organization-wide announcents with priority levels and expiry dates. Authorship tracked to the creating user. |
+| Events | Event creation and listing. Standalone - not tied to meetings. |
+| Reports | Board-to-Board report submition. Sender and reciever are tracked. |
+| Access control | Role-based endpoint protection at the controller and service layer. Moderator and admin access validated on every privileged operation. |
+
+### Out of Scope
+
+The following explicity not part of this system's current scope:
+
+- Email or push notifications of any kind.
+- Public-facing pages - the entire platform requires authentication.
+- Mobile native applications - the frontend is a responsive web application only.
+- Integration with external EESTEC systems.
+- Payment or membership fee processing.
+- Real-time feeatures (WebSockets, live vote counts during an open poll).
+
+---
+
+## a.5 Success Criteria
+
+The system is considered production ready whe nthe following conditions are met:
+
+1. General Meeting can be created, have attendance rounds opened, members checked in and out per round and poll run to conclusion without any manual database intervention.
+2. A vote cast by an ineligible user 9not checked in, wrng membership status, already voted) is rejected at the API layer with a descriptive error, regardless of what the frontend sends.
+3. All privileged operations return '403 Forbidden' when called without a valid moderator or admin toekn.
+4. the application starts cleanly on the providers VM with Liquibase applying all schema migrations automatically.
+5. A new developer can clone the repository, follow the setup instructions and have a running local environment within 30 minutes.
+
+---
+
+## a.6 Constrains & Risks
+
+| Constraint / Risk | Impact | Mitigation |
+|---|---|---|
+| Deployed on provider Infrastructure | Limited control over uptime, network configuration and OS-level dependencies | Docker containerisation isolates the application from host environment specifics |
+| No dedicated DBA | SChema migrations managed by developers | Liquibase enforces versioned, auditable schema changes - no manual 'ALTER TABLE' IN production |
+| Student Volunteer maintainers | Knowledge transfer risk between board cycles | "Wiki First" documentation policy - all decisions recorded before deployment |
+| Single active meeting constraint | 'is_active' flag currently enforced at application level only | Future: add a DB-level check constraint or trigger to guarantee at most one active meeting |
+| Attendance querry does not account for rounds | 'validatevoteEligibility' checks first attendance record, not round-specific | Known limitation - tobe addressed before second round voting is used in production |
+
+---
+
+## 1.7 GitHub Mapping
+
+| Documentation section | GitHub equivalent |
+|---|---|
+| This document (Project Brief) | 'README.md' |
+| Functional Requirements | Issues & Milestones |
+| API Reference | 'docs/openai.yaml' or Swagger UI at '/swagger-ui.html' |
+| Data Model | 'db/changelog/' (Liquibase) |
+| Sprint Log | 'CHANGELOG.md' |
+| Architecture Decisions | 'docs/decisions/' (ADR format)|
+| Folder Structure | 'CONTRIBUTING.md' |
+| Known Issues | Open GitHub Issues with 'bug' label |
+
+
+
+
+
+
+
+
+
 
 
