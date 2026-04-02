@@ -52,19 +52,19 @@ A single deployed application that enforces the following guarantees:
 
 The sustem recognises four distinct user classes, mapped to Spring Security roles and enforced via JWT claims:
 
-### 'ADMIN'
+### `ADMIN`
 Full system access. Responsible for user lifecycle management - creating reports, promoting members to moderator and deleting records. Can delete polls and meetings. There is typically one admin per board cycle.
 
-### 'MODERATOR'
+### `MODERATOR`
 Operational access. Creates and manages General Meetings, opens and closes polls, manages attendance rounds and creates announcements, events and reports. Cannot delete users or promote other users. This is the primary role for active board members.
 
-### 'USER' - Full Member ('member_status: MEMBER')
+### `USER` - Full Member (`member_status: MEMBER`)
 Can log in, view the dashboard, cast votes in active polls during meetings they are checked into. Voting eleigibility is enforced - a 'MEMBER' who is not checked in cannot vote.
 
-### 'USER' - Junior Member ('member_status: JUNIOR')
+### `USER`` - Junior Member (`member_status: JUNIOR`)
 Can log in and view the dashboard. Cannot cast votes. This is the entry level status for new members pending full membership approval.
 
-> **Note:** Alumni accounts exist in the system ('member_status:ALUMNI') for historical recoed purpose. they carry no voting rights.
+> **Note:** Alumni accounts exist in the system (`member_status:ALUMNI`) for historical recoed purpose. they carry no voting rights.
 
 ---
 
@@ -76,9 +76,9 @@ Can log in and view the dashboard. Cannot cast votes. This is the entry level st
 |---|---|
 | Authentication | JWT-based login and session management. Role assignment at login. token validation on every protected request. |
 | User management | CRUD operations on user accounts. Role promotion and demotion by admins. Committee membership tracking with temporal validity (start/end dates). |
-| Meeting Management | General Meeting creation and deletion. Active meeting detection ('is_active' flag) |
+| Meeting Management | General Meeting creation and deletion. Active meeting detection (`is_active` flag) |
 | Attendance | Multi-round attendace check-in and check-outper meeting. Round creation and deletion by moderators. Attendance state used to gate voting eligibility. |
-| Polls & Voting | Poll creation with candidate options, majority type and electoral body count. Multi-round election support ('FIRSST_ROUND', 'SECOND_ROUND', 'TIE_BREAKER'). Poll lifecycle management (open -> closed -> winner declared). |
+| Polls & Voting | Poll creation with candidate options, majority type and electoral body count. Multi-round election support (`FIRSST_ROUND`, `SECOND_ROUND`, `TIE_BREAKER`). Poll lifecycle management (open -> closed -> winner declared). |
 | Announcements | Organization-wide announcents with priority levels and expiry dates. Authorship tracked to the creating user. |
 | Events | Event creation and listing. Standalone - not tied to meetings. |
 | Reports | Board-to-Board report submition. Sender and reciever are tracked. |
@@ -97,7 +97,7 @@ The following explicity not part of this system's current scope:
 
 ---
 
-## a.5 Success Criteria
+## 1.5 Success Criteria
 
 The system is considered production ready whe nthe following conditions are met:
 
@@ -114,7 +114,7 @@ The system is considered production ready whe nthe following conditions are met:
 | Constraint / Risk | Impact | Mitigation |
 |---|---|---|
 | Deployed on provider Infrastructure | Limited control over uptime, network configuration and OS-level dependencies | Docker containerisation isolates the application from host environment specifics |
-| No dedicated DBA | SChema migrations managed by developers | Liquibase enforces versioned, auditable schema changes - no manual 'ALTER TABLE' IN production |
+| No dedicated DBA | SChema migrations managed by developers | Liquibase enforces versioned, auditable schema changes - no manual `ALTER TABLE` IN production |
 | Student Volunteer maintainers | Knowledge transfer risk between board cycles | "Wiki First" documentation policy - all decisions recorded before deployment |
 | Single active meeting constraint | 'is_active' flag currently enforced at application level only | Future: add a DB-level check constraint or trigger to guarantee at most one active meeting |
 | Attendance querry does not account for rounds | 'validatevoteEligibility' checks first attendance record, not round-specific | Known limitation - tobe addressed before second round voting is used in production |
@@ -125,22 +125,11 @@ The system is considered production ready whe nthe following conditions are met:
 
 | Documentation section | GitHub equivalent |
 |---|---|
-| This document (Project Brief) | 'README.md' |
+| This document (Project Brief) | `project-brief.md` |
 | Functional Requirements | Issues & Milestones |
-| API Reference | 'docs/openai.yaml' or Swagger UI at '/swagger-ui.html' |
-| Data Model | 'db/changelog/' (Liquibase) |
-| Sprint Log | 'CHANGELOG.md' |
-| Architecture Decisions | 'docs/decisions/' (ADR format)|
-| Folder Structure | 'CONTRIBUTING.md' |
+| API Reference | `docs/openai.yaml` or Swagger UI at `/swagger-ui.html` |
+| Data Model | `db/changelog/` (Liquibase) |
+| Sprint Log | `CHANGELOG.md` |
+| Architecture Decisions | `docs/decisions/` (ADR format)|
+| Folder Structure | `CONTRIBUTING.md` |
 | Known Issues | Open GitHub Issues with 'bug' label |
-
-
-
-
-
-
-
-
-
-
-
