@@ -85,7 +85,73 @@ The `MODERATOR` role is held by active board members. It covers all operational 
 A `USER` with `member_status:MEMBER` is a ful LC member with voting rights.
 
 **Capabilities:**
-- View the dashboard, events, announcement
+- View the dashboard, events, announcement and member directory
+- Cast a vote in an active poll, subject to all of the following conditions being true simultaneously:
+   - The poll is active (`is_active: true`)
+   - The poll status is `REQUIRES_NEXT_ROUND`
+   - The user has an attendance record for the meeting associated with the poll
+   - The user has not checked out of that meeting
+   - the user has not already voted in the current round
+- Change their vote within the same open round
+- View their own profile
+
+**Constraints:**
+- Cannot submit reports to board members
+- Vote eligibility is enforced at the service layer isn `VotingValidationService`. A user who meets all conditions in the UI but fails any server-side check will recieve a `400 Bad Request` with a descriptive error message.
+- **Known Limitation:** The attendance check in `validateVoteEligibility` queries the first attendance record for the user in the meeting - it the meeting - it does not filter by round. In meeting with multiple attendance rounds, a user checked in to Round 1 and checked out before Round 2 may still pass the attendance gate. This is tracked as a known issue and must be resolved before multi-roun voting is used in a live General Meeting. See Know Issues.
+
+---
+
+### USER - Junior Member
+
+A `USER` with `member_status: JUNIOR` is a new member who has not yet been granted full membership.
+
+**Capabilities:**
+- View the dashboard, events and announcements
+- View the member directory
+
+**constraints:**
+- Submit reports to board members
+- Cannot cast votes. The `member_status` check in `VotingValidationService` rejects any vote attempt from a non-`MEMBER` account with a `400` error.
+- Cannot access attendance management or poll management pages - these are gated in the frontend by moderrator role check in the backend by endpoint-level validation.
+
+---
+
+## 2.3 Role Escalation & Demotion
+
+Role changes are performed by the developer with direct database queries or an `ADMIN` via the following endpoints:
+
+```
+PATCH /api/users/{userId}/promote-moderator?adminID={adminId}
+PATCH /api/users/{userId}/demote?adminID={adminId}
+```
+
+Both endpoints validate that `adminId` resolves to an active `ADMIN` account before applying the change. The `userId` is updated in the database immediately - the affected user's current JWT remains valid until expiry. **There is no token invalidation on role chaange.** If a moderator is demoted, their existing token will continue to pass moderator checks until it expires. For sensitive demotions, therecommended mitigation is to also delete and recreate the uesr account, or to wait for the natural toekn expity window.
+
+This is a known architectural limitation to address before the system handles adversarial scenarios.
+
+---
+
+---
+
+# Feature Scope Map
+
+> **Legend:**
+> Complete and working in production
+> Complete with known limitations - see notes
+> In progress
+> Not started
+
+---
+
+## 3.1 Authentivation & Session Management
+
+| Feature | Status | Notes |
+|---|---|---|
+| JWT login | ✅ | Token issued at `/api/auth/login`. contains username, role, userId. |
+| JWT validation on protected routes | ✅ | Spring Security filter chain validates token on every request. |
+| Role embedding in token | ✅ | Role resolved from DB a login|
+
 
 
 
