@@ -151,8 +151,117 @@ This is a known architectural limitation to address before the system handles ad
 | JWT login | ✅ | Token issued at `/api/auth/login`. contains username, role, userId. |
 | JWT validation on protected routes | ✅ | Spring Security filter chain validates token on every request. |
 | Role embedding in token | ✅ | Role resolved from DB a login|
+| Token Refresh | ❌ | Not implemented. Tokens expire and the user must log in again. |
+| Logout (server-side invalidation) | ❌ | Logout clears localStorage only. No server0side toekn blacklist. |
+| Password reset | ❌ | Not in scope for current release. |
 
+---
 
+## 3.2 User & Membership Management
 
+| Feature | Status | Notes |
+|---|---|---|
+| Create user account | ✅ | `POST /api/auth/register`|
+| View member directory | ✅ | `GET /api/users` |
+| Update user profile | ✅ | `PATCH /api/users/{id}` |
+| Delete user account | ✅ | Admin only. `DELETE /api/users/{id}` |
+| Promote to moderator | ✅ | Admin only. |
+| Demote from moderator | ✅ | Admin only. |
+| Committee membership assignment | ✅ | Tracked with role title and temporal validity. |
+| Role change token invalidation | ❌ | See Role Escalation & Demotion section. |
 
+---
+
+## 3.3 Meeting Management
+
+| Feature | Status | Notes |
+|---|---|---|
+| Create General Meeting | ✅ | Moderator only. |
+| Delete General Meeting | ✅ | Admin only. |
+| Active meeting detection | ✅ | `is_active` flag. `GET /api/general_meetings/active` |
+| Multiple simultaneous active meetings | ❌ | Not supported by design. Only one meeting can be active at a time. DB-level enforcement is not yet implemented — currently enforced at application level only. |
+
+---
+
+## 3.4 Attendance Mnanagement
+
+| Feature | Status | Notes |
+|---|---|---|
+| Check in a member to a meeting | ✅ | Scoped to a specific attendance round. |
+| Check out a member from a meeting | ✅ | Records `check_out_time` on the attendance record. |
+| Multi-round attendance | ✅ | Moderator creates rounds with `POST /api/attendance_rounds`. Each round is independent. |
+| View attendance by round | ✅ | `GET /api/attendance_check/by-round/{roundId}` |
+| View attendance history by meeting | ✅ | `GET /api/attendance_check/by-meeting/{meetingId}` |
+| Attendance-gated voting | ⚠️ | Voting eligibility checks attendance but queries first record only, not round-specific. See Known Issues. |
+
+---
+
+## 3.5 Polls & Voting
+
+| Feature | Status | Notes |
+|---|---|---|
+| Create poll with candidates | ✅ | Moderator only. Includes majority type and electoral body count. |
+| Cast a vote | ✅ | Full eligibility validation: attendance, membership status, duplicate check, option ownership. |
+| Change vote within open round | ✅ | `PATCH /api/votes/{id}` |
+| Multi-round election support | ✅ | `FIRST_ROUND` → `SECOND_ROUND` → `TIE_BREAKER` |
+| Close poll | ✅ | Moderator only. Sets `is_active: false` and `status: WINNER_DECLARED`. |
+| Delete poll | ✅ | Admin only. |
+| Result calculation & display | 🚧 | Vote records exist and are queryable. Automated result resolution and winner declaration UI not yet built. |
+| Advancing to next round | 🚧 | `validateNextRoundStart` is implemented in the validation service. The controller endpoint and frontend flow are not yet wired. |
+| Quorum enforcement | ⚠️ | `quorum_required` is stored on the meeting. It is not currently programmatically enforced during voting — it is advisory only. |
+
+---
+
+## 3.6 Announcements
+
+| Feature | Status | Notes |
+|---|---|---|
+| Create announcement | ✅ | Any authenticated user. Author automatically assigned from JWT. |
+| View all announcements | ✅ | Sorted by `created_at` descending. |
+| Delete announcement | ✅ | Moderator only. |
+| Priority levels | ✅ | `LOW`, `MEDIUM`, `HIGH` via `AnnouncementPriority` enum. |
+| Expiry enforcement | ⚠️ | `expires_at` field is stored but not enforced — expired announcements still appear in `GET /api/announcements`. Filtering must be added. |
+| Author display in UI | ✅ | Author name shown on announcement card. |
+
+---
+
+## 3.7 Events
+
+| Feature | Status | Notes |
+|---|---|---|
+| Create event | ✅ | |
+| View all events | ✅ | |
+| Delete event | ✅ | |
+| Event-to-meeting association | ❌ | Events are standalone by design in the current release. |
+
+--- 
+
+## 3.8 Reports
+
+| Feature | Status | Notes |
+|---|---|---|
+| Submit report | ✅ | Any authenticated user. Sender and receiver tracked. |
+| View inbox / sent | ✅ | |
+| Delete report | ✅ | |
+
+--- 
+
+## 3.9 Settings
+
+| Feature | Status | Notes |
+|---|---|---|
+| Settings page | 🚧 | Page exists as a placeholder. Feature scope not yet defined. To be scoped in next planning cycle. |
+
+--- 
+
+## 3.10 Infrastructure & Operational
+
+| Feature | Status| Notes |
+|---|---|---|
+| Docker containerisation | 🚧 | Not yet configured. Required before university VM deployment. |
+| Liquibase schema migrations | ✅ | All schema changes versioned. Applied automatically on startup. |
+| Swagger / OpenAPI documentation | ✅ | Available at `/swagger-ui.html` when the backend is running. |
+| Environment variable configuration | 🚧 | JWT secret and DB credentials are not yet externalised to environment variables. Must be resolved before deployment. |
+| HTTPS / TLS | ❌ | Not configured. Required before any production traffic. |
+| Automated tests | ⚠️ | Voting flow tests exist. Attendance and authentication integration tests not yet written. |
 
