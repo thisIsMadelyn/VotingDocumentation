@@ -12,8 +12,8 @@
 Functional requirements describe what the system must do. Each requirements is assigned a unique identifier (FR-XXX), a priority and the role(s) it applies to. Requirements marked **[PARTIAL]** are implemented but with known gaps documented in the Feature Scope Map.
 
 **Prioritty levels:**
-- `P1` - Must have. The system cannt go to productiob without this.
-- `P2` - Should have. Importamt for correct operation but not an immediate blocker.
+- `P1` - Must have. The system cannot go to production without this.
+- `P2` - Should have. Important for correct operation but not an immediate blocker.
 - `P3` - Nice to have. Improves experience but can be deferred.
 
 ---
