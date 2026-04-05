@@ -1,4 +1,4 @@
-# System Overview: User Dashboard & Voting Platform
+# System Overview: Voting & Management System Platform
 
 This repository houses the complete infrastructure definitions and documentation for the **Voting System**
 platform , NOT THE SOURCE CODE.
