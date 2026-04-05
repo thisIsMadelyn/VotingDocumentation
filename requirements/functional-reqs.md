@@ -18,7 +18,7 @@ Functional requirements describe what the system must do. Each requirements is a
 
 ---
 
-## FR-100 - Authentacation & Session Management
+## FR-100 - Authentication & Session Management
 
 | ID | Requirement | Priority | Roles |
 |---|---|---|---|
