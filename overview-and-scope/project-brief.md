@@ -126,7 +126,9 @@ The system is considered production ready whe nthe following conditions are met:
 | Documentation section | GitHub equivalent |
 |---|---|
 | This document (Project Brief) | `project-brief.md` |
-| Functional Requirements | Issues & Milestones |
+| Functional Requirements | `requirements` |
+| Non-Functional Requirements | `requirements` |
+| Use Cases | `requirements` |
 | API Reference | `docs/openai.yaml` or Swagger UI at `/swagger-ui.html` |
 | Data Model | `db/changelog/` (Liquibase) |
 | Sprint Log | `CHANGELOG.md` |
