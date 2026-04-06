@@ -150,26 +150,107 @@ POST /api/auth/login
 
 ---
 
-## 4.5 DAtabase Architecture
+## 4.5 Database Architecture
 
 The MySQL database is the single source of truth for all application state. It is accessed exclusively through th Spring DAta JPA repository layer - no direct SQL query from the application code outside of Liquibase migrations.
 
 **Schema management:** All schema changes are versioned in Liquibase changelogs located at `src/main/resources/db/changelog`. Liquibase applies pending migrations automatically son application startup. The `DATABASECHANGELOG` table tracls which migrations have been applied.
 
+**Connections:** the backend to MySQL on `localhost:3306` in the production VM environment. Connection credentials are passed via environment variables - they are never hardcoded.
 
+**Key design decisions:**
 
+- `is_active` on `general_meetings` — application-level flag for active meeting detection. At most one meeting should be active at a time. DB-level enforcement (unique partial index or trigger) is a planned improvement.
+- `round_id` on `attendance_check` — nullable FK added to support multi-round attendance. Existing records without a round assignment remain valid.
+- `UNIQUE(user_id, poll_id, round)` on `votes` — database-level constraint preventing duplicate votes, enforced independently of the application-layer duplicate check in `VotingValidationService`.
+- `created_by` on `announcements` — nullable FK to `users`. Announcements created before this column was added have a null author — this is expected and handled gracefully in the UI.
 
+---
 
+## 4.6 Cross-Cutting Concerns
 
+### Error Handling 
 
+The backend uses a mix of controller-level try/catch and Spring's default exception handling. the follwing HTTP status codes are in use:
 
+| Status | When used |
+|---|---|
+| `200 OK` | Successful read or update |
+| `201 Created` | Successful resource creation |
+| `204 No Content` | Successful deletion |
+| `400 Bad Request` | Validation failure, business rule violation |
+| `401 Unauthorized` | Missing or invalid JWT |
+| `403 Forbidden` | Valid JWT but insufficient role |
+| `404 Not Found` | Resource does not exist |
+| `409 Conflict` | Duplicate resource (e.g. already checked in) |
+| `500 Internal Server Error` | Unhandled exception — should not reach production |
 
+> **Note:** A global `@ControllerAdvice` exception handler is a planned improvement. Currently, 500 responses may leak internal exception messages in some edge cases.
+ 
+### CORS
+ 
+CORS is configured on `PollsController` with `@CrossOrigin(origins = "http://localhost:5317")`. In production, CORS must be configured globally via `WebMvcConfigurer` to cover all controllers and to reflect the production domain. This is a deployment blocker.
+ 
+### Serialisation
+ 
+Jackson is used for JSON serialisation. Circular reference prevention is handled via `@JsonIgnoreProperties` on entity relationship fields. The `password` field on `Users` is excluded from all responses via `@JsonIgnoreProperties`.
 
+---
 
+4.7 Deployment Architecture
 
+### Development Environment
 
+```
+Developer machine
+├── Backend: mvn spring-boot:run → :8080
+├── Frontend: npm run dev → :5173
+└── MySQL: local instance → :3306
+```
 
+### Production Environment (Target)
+ 
+```
+University VM
+├── Docker container: spring-boot-app → :8080 (internal)
+├── Docker container: react-app (served by Nginx) → :80/:443
+├── Docker container: mysql → :3306 (internal only)
+└── Nginx reverse proxy → routes external traffic to containers
+```
 
+Docker Compose configuration is pending. The following services must be defined:
+ 
+- `backend` — Spring Boot JAR, environment variables for DB and JWT
+- `frontend` — React build served by Nginx
+- `db` — MySQL 8 with volume mount for data persistence
+- Shared Docker network for internal service communication
+
+### Environment Variables Required for Production
+ 
+| Variable | Used by | Description |
+|---|---|---|
+| `DB_URL` | Backend | JDBC connection string |
+| `DB_USERNAME` | Backend | MySQL username |
+| `DB_PASSWORD` | Backend | MySQL password |
+| `JWT_SECRET` | Backend | Secret key for JWT signing |
+| `JWT_EXPIRATION` | Backend | Token expiry in milliseconds |
+| `CORS_ALLOWED_ORIGINS` | Backend | Comma-separated list of allowed origins |
+
+> **These variables must never appear in source code or be committed to version control.** Use a `.env` file locally (gitignored) and server-level environment configuration on the VM.
+
+---
+
+## 4.8 Known Architectue Limitations
+
+| Limitation | Risk | Planned resolution |
+|---|---|---|
+| No server-side token invalidation | Demoted users retain access until token expiry | Token blacklist or short expiry window |
+| CORS configured per-controller | Some controllers may be unreachable in production | Global CORS configuration via `WebMvcConfigurer` |
+| No global exception handler | 500s may leak internal details | `@ControllerAdvice` with standardised error response DTO |
+| Single active meeting not DB-enforced | Multiple active meetings possible if constraint is bypassed | Unique partial index on `general_meetings(is_active)` where `is_active = true` |
+| Attendance validation not round-aware | Users checked into Round 1 and out may still pass vote gate | Rewrite `validateVoteEligibility` to filter by most recent round |
+| Environment variables not externalised | JWT secret and DB credentials are hardcoded in current codebase | Must be resolved before any deployment |
+| Docker configuration not written | Cannot deploy to VM | Write `Dockerfile` for backend and frontend, write `docker-compose.yml` |
 
 
 
