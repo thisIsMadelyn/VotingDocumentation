@@ -1,7 +1,7 @@
 # API Reference
 
 > **Document status:** Living document - update when endpoints are added or changes.
-> **Owner:** It Coordinator
+> **Owner:** IT Coordinator
 > **Github mapping:** `architecture/api-reference.md`
 > **Last reviewed:** April 2026
 > **Interactive docs:** Available at `http://localhost:8080/swagger-ui.html` when the api is running.
@@ -16,7 +16,7 @@ The backend exposes a RESTful JSON API under the `/api` base path. All endpoints
 Authorization: Bearer <token>
 ```
 
-The token is obtained from `POST /pi/auth/login` and must be included in every subsequent request. The Axions client in `src/services/Axiosclient.js` attachess this header auttomatically via a request interceptor.
+The token is obtained from `POST /pi/auth/login` and must be included in every subsequent request. The Axions client in `src/services/Axiosclient.js` attaches this header auttomatically via a request interceptor.
 
 **Base URL:**
 - Development: `http://localhost:8080/api`
