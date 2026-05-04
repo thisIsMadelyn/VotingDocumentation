@@ -109,7 +109,7 @@ The system is considered production ready whe nthe following conditions are met:
 
 ---
 
-## a.6 Constrains & Risks
+## 1.6 Constrains & Risks
 
 | Constraint / Risk | Impact | Mitigation |
 |---|---|---|
