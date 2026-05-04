@@ -8,7 +8,7 @@
 
 ## 1.1 Executive Summary 
 
-The EESTEEC LC Thessaloniki Voting & Management System is an internal web platform pupose-built for the operational needs of the Local Committe. It replaces a fragmented collection of spreadsheets, massaging theads and manual processes with a single, role-aware dashboard deployed on a virtualized server infrastructure.
+The EESTEEC LC Thessaloniki Voting & Management System is an internal web platform pupose-built for the operational needs of the Local Committee. It replaces a fragmented collection of spreadsheets, massaging theads and manual processes with a single, role-aware dashboard deployed on a virtualized server infrastructure.
 
 The Platform servers three core functions:
 
