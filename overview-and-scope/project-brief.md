@@ -40,8 +40,8 @@ These conditions introduced risk at every General Meeting: disputed vote counts,
 
 A single deployed application that enforces the following guarantees:
 
-- Member records are persisted in a structured elational database, accessible only to authenticated users with appropriate roles.
-- Attendance at a General Meeting is recordedper session and per round, with check-in and check-out timestamps. Voting eligibility is derived programmatically from attendace state - not from manual verification.
+- Member records are persisted in a structured relational database, accessible only to authenticated users with appropriate roles.
+- Attendance at a General Meeting is recorded per session and per round, with check-in and check-out timestamps. Voting eligibility is derived programmatically from attendace state - not from manual verification.
 - Voting is conducted through a controlled pipeline. A vote cannot cannot be cast by a user who is not checked-in, not a full 'MEMBER', or who has already voted in the current round. These constrains are enforced at the service layer, not the UI.
 - All destructive or privileged operations - poll creation, user promotion, meeting management - require an authenticated 'MODERATOR' or 'ADMIN' role, validated server-side on every request.
 - The system runson infrastructure owned by the provider, keeping member data within institutional boundaries.
