@@ -20,7 +20,7 @@ The system is not a generic tool. Every design decision - the attendance-to-vote
 
 ---
 
-## 1.2 Problem Statementt
+## 1.2 Problem Statement
 
 ### Current State
 
